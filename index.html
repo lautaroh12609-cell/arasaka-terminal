@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ARASAKA BREACH</title>
+<style>
+:root{color-scheme:dark;--bg:#07060d;--panel:#0e0b1a;--fg:#c9f7ff;--dim:#6b6f8f;--neon:#00f0ff;--pink:#ff2a9d;--yel:#fcee0a;--err:#ff4d6d;--ok:#39ff88;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 ui-monospace,Menlo,Consolas,monospace}
+#app{display:flex;flex-direction:column;height:100%;max-width:900px;margin:0 auto}
+header{padding:8px 12px;border-bottom:1px solid var(--pink);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;background:var(--panel)}
+header b{color:var(--yel);letter-spacing:2px}
+#pips{display:flex;gap:4px}#pips i{width:14px;height:6px;background:#2a2640}#pips i.on{background:var(--neon);box-shadow:0 0 6px var(--neon)}
+#term{flex:1;overflow-y:auto;padding:12px;white-space:pre-wrap;word-break:break-word}
+#term div{min-height:1em}.dim{color:var(--dim)}.err{color:var(--err)}.ok{color:var(--ok)}.neon{color:var(--neon)}.pink{color:var(--pink)}.yel{color:var(--yel)}
+#line{display:flex;gap:8px;padding:8px 12px;border-top:1px solid #2a2640;background:var(--panel)}
+#ps{color:var(--pink);white-space:nowrap}
+#app{position:relative}
+#cb,#hb{background:none;border:1px solid var(--neon);color:var(--neon);font:inherit;font-size:12px;padding:3px 8px;cursor:pointer}
+#cb:hover,#cb.on,#hb:hover{background:var(--neon);color:var(--bg)}
+#hb{color:var(--neon);font:inherit;font-size:12px;padding:3px 8px;cursor:pointer}
+#start{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:16px;text-align:center;overflow-y:auto;background:repeating-linear-gradient(0deg,rgba(0,240,255,.04) 0 1px,transparent 1px 3px),radial-gradient(ellipse at 50% 30%,#1a0b2e 0%,var(--bg) 70%)}
+#start[hidden]{display:none}
+#start .box{max-width:520px;width:100%}
+.glitch{font-size:clamp(30px,8vw,56px);font-weight:bold;letter-spacing:4px;color:var(--yel);text-shadow:2px 0 var(--pink),-2px 0 var(--neon);animation:gl 3s infinite steps(1)}
+@keyframes gl{0%,92%,100%{transform:none;text-shadow:2px 0 var(--pink),-2px 0 var(--neon)}93%{transform:translateX(-4px);text-shadow:-4px 0 var(--pink),4px 0 var(--neon)}95%{transform:translateX(3px)}97%{transform:translateX(-2px);text-shadow:4px 0 var(--pink),-4px 0 var(--neon)}}
+@media (prefers-reduced-motion:reduce){.glitch{animation:none}}
+#start .sub{color:var(--pink);letter-spacing:3px;margin:6px 0 14px;font-size:12px}
+#start .lore{color:var(--dim);margin:0 0 18px}
+#stats{display:flex;gap:12px;justify-content:center;margin-bottom:20px}
+#stats div{flex:1;border:1px solid #2a2640;background:var(--panel);padding:12px 6px}
+#stats b{display:block;font-size:34px;color:var(--neon);text-shadow:0 0 10px var(--neon)}
+#stats div+div b{color:var(--ok);text-shadow:0 0 10px var(--ok)}
+#stats span{font-size:11px;letter-spacing:2px;color:var(--dim)}
+#go{background:var(--pink);color:var(--bg);border:0;font:inherit;font-weight:bold;letter-spacing:3px;padding:12px 28px;cursor:pointer;box-shadow:0 0 16px rgba(255,42,157,.6)}
+#go:hover{background:var(--yel);box-shadow:0 0 16px rgba(252,238,10,.6)}
+#sn{font-size:12px;margin:12px 0 0}
+#rb{background:none;border:1px solid var(--err);color:var(--err);font:inherit;font-size:12px;padding:3px 8px;cursor:pointer}
+#rb:hover,#rb.on{background:var(--err);color:var(--bg)}
+#sheet{position:absolute;top:46px;right:8px;width:min(430px,calc(100% - 16px));max-height:calc(100% - 110px);overflow-y:auto;background:var(--panel);border:1px solid var(--pink);box-shadow:0 0 18px rgba(255,42,157,.35);padding:10px;z-index:5}
+#sheet[hidden]{display:none}
+#sheet h3{margin:0 0 8px;font-size:13px;color:var(--yel);letter-spacing:1px}
+#chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:#1a1530;border:1px solid #2a2640;color:var(--fg);font:inherit;font-size:13px;padding:4px 9px;cursor:pointer}
+.chip:hover{border-color:var(--neon)}.chip.sel{background:var(--neon);color:var(--bg);border-color:var(--neon)}
+#det{margin-top:10px;border-top:1px dashed #2a2640;padding-top:10px}
+#det .nm{color:var(--neon);font-weight:bold}
+#det p{margin:6px 0}
+#det pre{margin:6px 0;padding:6px 8px;background:#05040a;border-left:3px solid var(--pink);color:var(--ok);white-space:pre-wrap;word-break:break-word}
+#det .try{background:none;border:1px solid var(--pink);color:var(--pink);font:inherit;font-size:12px;padding:3px 8px;cursor:pointer}
+#det .try:hover{background:var(--pink);color:var(--bg)}
+#in{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--fg);font:inherit;caret-color:var(--neon)}
+</style>
+</head>
+<body>
+<div id="app">
+<header><b>▌ARASAKA BREACH</b><span id="pips"></span><span id="lv" class="dim"></span><button id="cb" type="button" aria-expanded="false">MACHETE</button><button id="rb" type="button">REINICIAR</button><button id="hb" type="button">INICIO</button></header>
+<div id="term"></div>
+<div id="sheet" hidden><h3>▌MACHETE DE COMANDOS</h3><div id="chips"></div><div id="det"><span class="dim">Tocá un comando para ver qué hace y un ejemplo.</span></div></div>
+<div id="line"><span id="ps"></span><input id="in" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="terminal"></div>
+</div>
+<div id="start"><div class="box"><div class="glitch">ARASAKA BREACH</div><p class="sub">// NIGHT CITY · 2077 · 10 NODOS //</p><p class="lore">Arasaka esconde un secreto en sus servidores. Atraviesa los 10 nodos, encontrá cada clave y sacale la información antes de que te rastreen.</p><div id="stats"><div><b id="sT">…</b><span>INTENTARON</span></div><div><b id="sD">…</b><span>LO LOGRARON</span></div></div><button id="go" type="button">▶ INICIAR</button><p id="sn" class="dim"></p></div></div>
+<script>
+const PASS=[null,'chrome-ghost-4471','blackwall_9d2k','soulkiller33x','netrunner-Q7z1','relic_mox88','afterlife-5tH2','militech_zz19','silverhand-2077','saburo-ky0to','ALMA-root-0001'];
+const LV=[null,
+{t:'Perímetro',b:'Estás dentro del servidor perimetral de Arasaka Tower. Un fixer te dejó un archivo de bienvenida.',h:'Mirá qué archivos hay con "ls" y leelo con "cat readme".'},
+{t:'Archivo raro',b:'La clave está en un archivo cuyo nombre es un solo guion: "-".',h:'"cat -" espera entrada del teclado. Usá la ruta: cat ./-'},
+{t:'Espacios',b:'La clave está en un archivo con espacios en el nombre.',h:'Usá comillas: cat "datos arasaka.txt" (o escapá cada espacio con \\).'},
+{t:'Sombras',b:'Los de seguridad ocultaron la clave dentro de una carpeta, en un archivo oculto.',h:'Entrá con "cd inhere" y usá "ls -a" para ver archivos ocultos (los que empiezan con punto).'},
+{t:'Datos corruptos',b:'Hay varios archivos, pero sólo uno es texto legible. El resto es basura binaria.',h:'Entrá a inhere y corré "file *" para ver el tipo de cada archivo. Leé el que diga ASCII text.'},
+{t:'Rastreo',b:'La clave está en algún lugar del almacén, en un archivo que termina en .key',h:'Usá find: find . -name "*.key"  y después cat con la ruta que te devuelva.'},
+{t:'Aguja en el pajar',b:'Un log gigante. La clave está en la línea que contiene la palabra "clave".',h:'grep clave data.txt'},
+{t:'Ruido duplicado',b:'Todas las líneas están repetidas, menos una. Esa es la clave. Usá pipes ( | ).',h:'uniq sólo compara líneas vecinas, así que primero ordená: sort data.txt | uniq -u'},
+{t:'Cifrado básico',b:'El archivo está codificado en base64. Decodificalo.',h:'base64 -d data.txt'},
+{t:'Núcleo ALMA',b:'Última barrera: el texto está cifrado con ROT13. Descifralo y obtené acceso total.',h:"cat data.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'"}
+];
+function rng(s){return()=>(s=(s*1664525+1013904223)%4294967296)/4294967296}
+function shuf(a,r){for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+const W=['nodo','daemon','proxy','ICE','relay','shard','vector','cipher','kernel','buffer','token','socket'];
+function makeFS(n){const P=PASS[n],r=rng(n*97+5);
+switch(n){
+case 1:return{readme:'Bienvenido, netrunner.\nArasaka esconde algo grande en sus servidores.\nCada nivel guarda la clave del siguiente.\nCuando la encuentres: submit <clave>\n\nLa clave de este nivel es: '+P+'\n'};
+case 2:return{'-':P+'\n'};
+case 3:return{'datos arasaka.txt':P+'\n'};
+case 4:return{inhere:{'.oculto':P+'\n',basura:'nada por acá\n',cache:'0x00 0x00\n'}};
+case 5:{const d={};for(let i=0;i<5;i++)d['dato_0'+i]='\x01'+Array.from({length:30},()=>String.fromCharCode(161+Math.floor(r()*90))).join('');d.dato_03='clave: '+P+'\n';return{inhere:d}}
+case 6:return{almacen:{a:{'x.log':'ruido\n','y.txt':'ruido\n'},b:{c:{'old.bak':'vacío\n'},'zz.key':P+'\n'},'notas.md':'nada útil\n'}};
+case 7:{const L=Array.from({length:80},(_,i)=>'registro_'+i+': '+W[Math.floor(r()*12)]+'_'+Math.floor(r()*9999));L[Math.floor(r()*80)]='clave: '+P;return{'data.txt':L.join('\n')+'\n'}}
+case 8:return{'data.txt':shuf([...W,...W,P],r).join('\n')+'\n'};
+case 9:return{'data.txt':btoa('La clave es: '+P)+'\n'};
+case 10:return{'data.txt':rot('La clave final es: '+P)+'\n'};}}
+function rot(s){return s.replace(/[a-z]/gi,c=>{const b=c<='Z'?65:97;return String.fromCharCode((c.charCodeAt(0)-b+13)%26+b)})}
+const MAXF=7;let lvl=1,cwd=[],fs=makeFS(1),hist=[],hi=0,fails=0;
+function saveF(){try{localStorage.setItem('arasaka_fails',fails)}catch(e){}}
+function doReset(m){try{localStorage.removeItem('arasaka_lvl');localStorage.removeItem('arasaka_fails')}catch(e){}lvl=1;fails=0;cwd=[];fs=makeFS(1);T.innerHTML='';if(m)out(m,'err');boot()}
+try{const s=+localStorage.getItem('arasaka_lvl');if(s>=1&&s<=10){lvl=s;fs=makeFS(lvl);fails=Math.min(+localStorage.getItem('arasaka_fails')||0,MAXF-1)}}catch(e){}
+const T=document.getElementById('term'),I=document.getElementById('in');
+function out(t,c){String(t).split('\n').forEach(l=>{const d=document.createElement('div');if(c)d.className=c;d.textContent=l;T.appendChild(d)});T.scrollTop=T.scrollHeight}
+function ui(){document.getElementById('ps').textContent='nivel'+lvl+'@arasaka:~'+(cwd.length?'/'+cwd.join('/'):'')+'$';document.getElementById('lv').textContent='NIVEL '+lvl+'/10 · FALLOS '+fails+'/'+MAXF;document.getElementById('pips').innerHTML=Array.from({length:10},(_,i)=>'<i class="'+(i<lvl?'on':'')+'"></i>').join('')}
+function brief(){out('═══ NIVEL '+lvl+' · '+LV[lvl].t.toUpperCase()+' ═══','yel');out('OBJETIVO: '+LV[lvl].b,'neon');out('Escribí "hint" si necesitás una pista.','dim')}
+function res(p){let a=p.startsWith('/')||p.startsWith('~')?[]:[...cwd];p.split('/').forEach(s=>{if(!s||s==='.'||s==='~')return;if(s==='..')a.pop();else a.push(s)});return a}
+function get(a){let n=fs;for(const p of a){if(typeof n!=='object'||!(p in n))return;n=n[p]}return n}
+function file(p){const n=get(res(p));if(n===undefined)throw Error(p+': No existe el archivo o directorio');return n}
+function txt(p){const n=file(p);if(typeof n==='object')throw Error(p+': Es un directorio');return n}
+function expand(t){if(t.q||!t.s.includes('*'))return[t.s];const i=t.s.lastIndexOf('/'),dir=i<0?'':t.s.slice(0,i),pat=t.s.slice(i+1),d=get(res(dir));if(typeof d!=='object')return[t.s];const re=new RegExp('^'+pat.replace(/[.+?^${}()|[\]\\]/g,'\\$&').replace(/\*/g,'.*')+'$');const m=Object.keys(d).filter(k=>re.test(k)&&(pat[0]==='.'||k[0]!=='.')).sort();return m.length?m.map(k=>(i<0?'':dir+'/')+k):[t.s]}
+function tok(s){const r=/"([^"]*)"|'([^']*)'|((?:\\.|[^\s"'\\])+)/g,o=[];let m;while(m=r.exec(s)){if(m[3]!==undefined)o.push({s:m[3].replace(/\\(.)/g,'$1'),q:/\\/.test(m[3])});else o.push({s:m[1]??m[2],q:true})}return o}
+function ex(s){return s.replace(/(.)-(.)/g,(_,a,b)=>{let o='';for(let c=a.charCodeAt(0);c<=b.charCodeAt(0);c++)o+=String.fromCharCode(c);return o})}
+const lines=s=>s.replace(/\n$/,'').split('\n');
+const C={
+help(){return'Comandos: ls [-a], cd, pwd, cat, head [-n N], wc -l, file, find <ruta> -name <patrón>,\ngrep [-i] <texto> [archivo], sort, uniq [-u], base64 -d, tr <set1> <set2>, echo,\nclear, hint, objetivo, submit <clave>, reset\nPodés encadenar comandos con pipes:  cmd1 | cmd2'},
+pwd(){return'/home/nivel'+lvl+(cwd.length?'/'+cwd.join('/'):'')},
+echo(a){return a.join(' ')},
+clear(){T.innerHTML='';return''},
+ls(a){const all=a.includes('-a');a=a.filter(x=>x[0]!=='-');const p=a[0]||'.',n=file(p);if(typeof n!=='object')return p;return Object.keys(n).filter(k=>all||k[0]!=='.').sort().map(k=>typeof n[k]==='object'?k+'/':k).join('\n')},
+cd(a){const p=res(a[0]||'~'),n=get(p);if(n===undefined)throw Error('cd: '+a[0]+': No existe');if(typeof n!=='object')throw Error('cd: '+a[0]+': No es un directorio');cwd=p;return''},
+cat(a,s){if(!a.length)return s??'';return a.map(txt).join('')},
+head(a,s){let n=10;const i=a.indexOf('-n');if(i>=0){n=+a[i+1];a.splice(i,2)}const t=a[0]?txt(a[0]):s;return lines(t).slice(0,n).join('\n')},
+wc(a,s){const t=a.filter(x=>x[0]!=='-')[0]?txt(a.filter(x=>x[0]!=='-')[0]):s;return String(lines(t).length)},
+file(a){return a.map(p=>{const n=file(p);return p+': '+(typeof n==='object'?'directory':n[0]==='\x01'?'data':'ASCII text')}).join('\n')},
+find(a){const i=a.indexOf('-name');if(i<0)throw Error('uso: find <ruta> -name <patrón>');const base=a[0]&&a[0][0]!=='-'?a[0]:'.',pat=a[i+1],re=new RegExp('^'+pat.replace(/[.+?^${}()|[\]\\]/g,'\\$&').replace(/\*/g,'.*')+'$'),r=[];(function w(n,pre){if(typeof n!=='object')return;for(const k of Object.keys(n).sort()){const q=pre+'/'+k;if(re.test(k))r.push(q);w(n[k],q)}})(file(base),base.replace(/\/$/,''));return r.join('\n')},
+grep(a,s){const ic=a.includes('-i');a=a.filter(x=>x!=='-i');const re=new RegExp(a[0],ic?'i':'');const t=a[1]?txt(a[1]):s;return lines(t).filter(l=>re.test(l)).join('\n')},
+sort(a,s){const t=a[0]?txt(a[0]):s;return lines(t).sort().join('\n')},
+uniq(a,s){const u=a.includes('-u');a=a.filter(x=>x[0]!=='-');const L=lines(a[0]?txt(a[0]):s),o=[];for(let i=0;i<L.length;){let j=i;while(j<L.length&&L[j]===L[i])j++;if(!u||j-i===1)o.push(L[i]);i=j}return o.join('\n')},
+base64(a,s){const t=(a.filter(x=>x[0]!=='-')[0]?txt(a.filter(x=>x[0]!=='-')[0]):s).trim();if(!a.includes('-d'))return btoa(t);try{return atob(t)}catch(e){throw Error('base64: entrada inválida')}},
+tr(a,s){const x=ex(a[0]||''),y=ex(a[1]||'');return(s??'').replace(/[\s\S]/g,c=>{const i=x.indexOf(c);return i>=0&&y[i]?y[i]:c})},
+hint(){return'PISTA: '+LV[lvl].h},
+objetivo(){brief();return''},
+level(){brief();return''},
+reset(){doReset();return''},
+submit(a){const k=(a[0]||'').trim();if(!k)throw Error('uso: submit <clave>');if(k!==PASS[lvl]){fails++;saveF();if(fails>=MAXF){doReset('⚠ ICE ACTIVADO: '+MAXF+' intentos fallidos. Te rastrearon y borraron tu progreso.\nVolvés al nivel 1.');return''}throw Error('ACCESO DENEGADO. Clave incorrecta. Intentos restantes: '+(MAXF-fails))}
+if(lvl===10){end();return''}
+lvl++;fails=0;saveF();cwd=[];fs=makeFS(lvl);try{localStorage.setItem('arasaka_lvl',lvl)}catch(e){}
+out('ACCESO CONCEDIDO. Saltando al siguiente nodo...','ok');brief();return''}
+};
+function run(line){let inp=null;const segs=line.split('|');for(const sg of segs){const t=tok(sg);if(!t.length)continue;const c=t[0].s,a=t.slice(1).flatMap(expand);if(!C[c])throw Error(c+': comando no encontrado');inp=C[c](a,inp)}return inp}
+function end(){markDone();out('\n█████ ACCESO TOTAL: NÚCLEO ALMA ██████','pink');
+out('Descargando archivos del Proyecto ALMA...\n\n[1] Arasaka digitaliza la conciencia de sus ejecutivos con una versión mejorada de Soulkiller.\n[2] Los "respaldos" son enviados a un servidor dentro del Blackwall, fuera de todo registro legal.\n[3] Saburo Arasaka no murió: su copia dirige la corporación desde la red.\n[4] Hay una lista de 1.200 personas marcadas como "donantes" de cuerpo para el próximo traspaso.\n\nSubiste todo a la red abierta. Night City ya lo sabe.','neon');
+out('\n★ MISIÓN CUMPLIDA ★  Escribí "reset" para jugar de nuevo.','yel');try{localStorage.removeItem('arasaka_lvl')}catch(e){}}
+function boot(){out('   ╔═╗╦═╗╔═╗╔═╗╔═╗╦╔═╔═╗  ╔╗ ╦═╗╔═╗╔═╗╔═╗╦ ╦\n   ╠═╣╠╦╝╠═╣╚═╗╠═╣╠╩╗╠═╣  ╠╩╗╠╦╝║╣ ╠═╣║  ╠═╣\n   ╩ ╩╩╚═╩ ╩╚═╝╩ ╩╩ ╩╩ ╩  ╚═╝╩╚═╚═╝╩ ╩╚═╝╩ ╩','pink');
+out('Night City, 2077. Un fixer te contrata: Arasaka oculta un secreto en sus servidores\ny vos sos el netrunner que va a sacarlo a la luz.\n\nCada nivel es un nodo. Dentro hay una CLAVE que abre el siguiente.\nCuando la encuentres, escribila así:  submit <clave>\n\nCómo moverte: ls (ver archivos), cat <archivo> (leer), cd <carpeta> (entrar).\nEscribí "help" para ver todos los comandos, "hint" para una pista.\nSon 10 niveles. Ojo: con 7 claves incorrectas en un nivel, el ICE te borra el progreso.\nPodés reiniciar cuando quieras con el botón REINICIAR o el comando "reset". Suerte, choom.\n','neon');brief();ui()}
+I.addEventListener('keydown',e=>{
+if(e.key==='ArrowUp'){if(hi>0)I.value=hist[--hi];e.preventDefault()}
+else if(e.key==='ArrowDown'){I.value=hi<hist.length-1?hist[++hi]:'';hi=Math.min(hi+1,hist.length)}
+else if(e.key==='Enter'){const l=I.value;I.value='';if(!l.trim())return;hist.push(l);hi=hist.length;out(document.getElementById('ps').textContent+' '+l,'dim');
+try{const r=run(l);if(r)out(r)}catch(x){out(x.message,'err')}ui()}});
+document.getElementById('term').addEventListener('click',()=>{if(!getSelection().toString())I.focus()});
+const CM=[
+{c:'ls',d:'Lista los archivos y carpetas del directorio actual. Con -a también muestra los ocultos (los que empiezan con punto).',e:'ls -a'},
+{c:'cd',d:'Cambia de carpeta. "cd .." sube un nivel y "cd" solo vuelve al inicio.',e:'cd inhere'},
+{c:'pwd',d:'Muestra en qué ruta estás parado ahora mismo.',e:'pwd'},
+{c:'cat',d:'Muestra el contenido de un archivo. Si el nombre tiene espacios, ponelo entre comillas. Si empieza con guion, anteponé ./',e:'cat "datos arasaka.txt"'},
+{c:'head',d:'Muestra sólo las primeras líneas de un archivo (10 por defecto). Con -n elegís cuántas.',e:'head -n 3 data.txt'},
+{c:'wc',d:'Cuenta cosas. Con -l te dice cuántas líneas tiene un archivo o una salida.',e:'wc -l data.txt'},
+{c:'file',d:'Te dice qué tipo de archivo es: texto legible (ASCII text), datos binarios (data) o carpeta (directory).',e:'file *'},
+{c:'find',d:'Busca archivos por nombre dentro de una carpeta y todas sus subcarpetas. El * funciona como comodín.',e:'find . -name "*.key"'},
+{c:'grep',d:'Filtra y muestra sólo las líneas que contienen cierto texto. Con -i ignora mayúsculas y minúsculas.',e:'grep clave data.txt'},
+{c:'sort',d:'Ordena las líneas alfabéticamente. Es el paso previo para que uniq funcione bien.',e:'sort data.txt'},
+{c:'uniq',d:'Quita líneas repetidas que están una al lado de la otra. Con -u deja sólo las que aparecen una única vez. Casi siempre se usa después de sort.',e:'sort data.txt | uniq -u'},
+{c:'base64',d:'Codifica o decodifica texto en base64. Con -d decodifica: sirve cuando ves un texto raro que termina en = o ==.',e:'base64 -d data.txt'},
+{c:'tr',d:'Reemplaza letras por otras. Le das un set de origen y uno de destino. Con esto se descifra ROT13 (cada letra se corre 13 lugares).',e:"cat data.txt | tr 'A-Za-z' 'N-ZA-Mn-za-m'"},
+{c:'echo',d:'Escribe en pantalla el texto que le pases.',e:'echo hola netrunner'},
+{c:'|  (pipe)',d:'La barra vertical conecta comandos: la salida del primero pasa como entrada al siguiente. Así combinás herramientas simples.',e:'cat data.txt | grep clave'},
+{c:'submit',d:'Entrega la clave que encontraste. Si es correcta, pasás al siguiente nivel.',e:'submit chrome-ghost-4471'},
+{c:'hint',d:'Te da una pista del nivel en el que estás.',e:'hint'},
+{c:'objetivo',d:'Vuelve a mostrar el objetivo del nivel actual.',e:'objetivo'},
+{c:'clear',d:'Limpia la pantalla de la terminal.',e:'clear'},
+{c:'reset',d:'Borra tu progreso y vuelve al nivel 1.',e:'reset'}
+];
+const sh=document.getElementById('sheet'),chips=document.getElementById('chips'),det=document.getElementById('det'),cb=document.getElementById('cb');
+function showCmd(m){det.innerHTML='';const n=document.createElement('div');n.className='nm';n.textContent=m.c;const p=document.createElement('p');p.textContent=m.d;const l=document.createElement('div');l.className='dim';l.textContent='Ejemplo:';const pre=document.createElement('pre');pre.textContent='$ '+m.e;const b=document.createElement('button');b.type='button';b.className='try';b.textContent='Pasar a la terminal';b.onclick=()=>{I.value=m.e;toggleSheet(false);I.focus()};det.append(n,p,l,pre,b)}
+CM.forEach(m=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=m.c;b.onclick=()=>{[...chips.children].forEach(x=>x.classList.remove('sel'));b.classList.add('sel');showCmd(m)};chips.appendChild(b)});
+function toggleSheet(v){sh.hidden=v===undefined?!sh.hidden:!v;cb.classList.toggle('on',!sh.hidden);cb.setAttribute('aria-expanded',String(!sh.hidden))}
+cb.onclick=()=>toggleSheet();
+addEventListener('keydown',e=>{if(e.key==='Escape'&&!sh.hidden){toggleSheet(false);I.focus()}});
+const rb=document.getElementById('rb');let rt;
+function rbOff(){delete rb.dataset.c;rb.textContent='REINICIAR';rb.classList.remove('on')}
+rb.onclick=()=>{if(rb.dataset.c){clearTimeout(rt);rbOff();doReset();ui();I.focus()}else{rb.dataset.c=1;rb.textContent='¿SEGURO? CLICK DE NUEVO';rb.classList.add('on');rt=setTimeout(rbOff,3000)}};
+const st=document.getElementById('start'),sT=document.getElementById('sT'),sD=document.getElementById('sD'),go=document.getElementById('go'),sn=document.getElementById('sn');
+let DB=null,myId=null;
+function showStart(){go.textContent=lvl>1?'▶ CONTINUAR (NIVEL '+lvl+')':'▶ INICIAR';st.hidden=false;go.focus()}
+function noStats(m){sT.textContent=sD.textContent='—';sn.textContent=m}
+async function markTry(){if(!DB||!myId)return;try{const r=DB.collection('players').doc(myId);const s=await r.get();if(!s.exists)await r.set({tried:true,done:false,ts:Date.now()})}catch(e){}}
+async function markDone(){if(!DB||!myId)return;try{await DB.collection('players').doc(myId).set({tried:true,done:true,ts:Date.now()})}catch(e){}}
+go.onclick=()=>{st.hidden=true;T.innerHTML='';markTry();boot();ui();I.focus()};
+document.getElementById('hb').onclick=()=>{toggleSheet(false);showStart()};
+(async()=>{const t=setTimeout(()=>{if(sT.textContent==='…')noStats('Contador compartido no disponible.')},10000);
+try{if(!window.claude)throw 0;const[db,user]=await Promise.all([claude.use('db'),claude.use('user')]);if(!db||!user){clearTimeout(t);noStats('Contador compartido no disponible.');return}
+DB=db;myId=await user.id();
+db.collection('players').onSnapshot(s=>{clearTimeout(t);sT.textContent=s.size;sD.textContent=s.docs.filter(d=>d.data().done).length;sn.textContent=''},()=>{clearTimeout(t);noStats('No se pudo leer el contador.')})}
+catch(e){clearTimeout(t);noStats('Contador compartido no disponible.')}})();
+showStart();
+</script>
+</body>
+</html>
